@@ -13,7 +13,7 @@ function TopicList({
              gap={3} style={{maxWidth: '64rem'}}>
 
             {items.map((item: any) => (
-                <Box display="flex" flexDirecion="column" gap={3}>
+                <Box display="flex" flexDirection="column" gap={3}>
                     <TopicCard topic={item} />
                     <Divider />
                 </Box>

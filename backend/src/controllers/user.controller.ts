@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
 import { User } from "src/entities/user.entity";
 import { UserService } from "src/services/user.service";
 
@@ -11,19 +11,48 @@ export class UserController {
         return this.service.findAll();
     }
     @Get(':id')
-    findById(@Param('id', ParseIntPipe) id: number): Promise<User> {
-        return this.service.findById(id);
+    async findById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        const found = await this.service.findById(id);
+
+        if (!found) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        }
+
+        return found;
     }
     @Get(':username')
-    findByUsername(@Param('username') username: string): Promise<User> {
-        return this.service.findByUsername(username);
+    async findByUsername(@Param('username') username: string): Promise<User> {
+        const found = await this.service.findByUsername(username);
+
+        if (!found) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        }
+
+        return found;
     }
     @Post()
     create(@Body() user: User): Promise<User> {
         return this.service.create(user);
     }
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.service.remove(id);
+    @HttpCode(204)
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        const found = await this.service.findById(id);
+
+        if (!found) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        }
+
+        return this.service.delete(found.id);
+    }
+    @Put(':id')
+    async update(@Param('id', ParseIntPipe) id: number, @Body() user: User): Promise<User> {
+        const found = await this.service.findById(id);
+
+        if (!found) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        }
+
+        return this.service.update(found.id, user);
     }
 }

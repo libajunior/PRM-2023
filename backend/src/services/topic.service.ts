@@ -14,7 +14,11 @@ export class TopicService {
     ) {}
 
     findAll(): Promise<Topic[]> {
-        return this.repository.find();
+        return this.repository.find({
+            order: {
+                id: 'DESC'
+            }
+        });
     }
     findById(id: number): Promise<Topic> {
         return this.repository.findOneBy({ id: id });
@@ -25,6 +29,9 @@ export class TopicService {
                 owner: {
                     id: user.id
                 }
+            },
+            order: {
+                id: 'DESC'
             }
         });
     }
